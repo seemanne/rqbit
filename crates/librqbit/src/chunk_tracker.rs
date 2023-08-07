@@ -19,6 +19,9 @@ pub struct ChunkTracker {
     // These are the pieces that we actually have, fully checked and downloaded.
     have: BF,
 
+    //This is the empty bitfield we pretend to have
+    empty: BF,
+
     lengths: Lengths,
 
     priority_piece_ids: Vec<usize>,
@@ -56,7 +59,7 @@ pub enum ChunkMarkingResult {
 }
 
 impl ChunkTracker {
-    pub fn new(needed_pieces: BF, have_pieces: BF, lengths: Lengths) -> Self {
+    pub fn new(needed_pieces: BF, have_pieces: BF, empty_pieces: BF, lengths: Lengths) -> Self {
         // TODO: ideally this needs to be a list based on needed files, e.g.
         // last needed piece for each file. But let's keep simple for now.
         let last_needed_piece_id = needed_pieces.iter_ones().rev().next();
@@ -70,11 +73,15 @@ impl ChunkTracker {
             needed_pieces,
             lengths,
             have: have_pieces,
+            empty: empty_pieces,
             priority_piece_ids,
         }
     }
     pub fn get_needed_pieces(&self) -> &BF {
         &self.needed_pieces
+    }
+    pub fn get_empty_pieces(&self) -> &BF {
+        &self.empty
     }
     pub fn get_have_pieces(&self) -> &BF {
         &self.have
@@ -137,11 +144,12 @@ impl ChunkTracker {
             .unwrap()
     }
 
-    pub fn is_chunk_ready_to_upload(&self, chunk: &ChunkInfo) -> bool {
-        self.have
-            .get(chunk.piece_index.get() as usize)
-            .map(|b| *b)
-            .unwrap_or(false)
+    pub fn is_chunk_ready_to_upload(&self, _chunk: &ChunkInfo) -> bool {
+        //self.have
+        //    .get(chunk.piece_index.get() as usize)
+        //    .map(|b| *b)
+        //    .unwrap_or(false)
+        false
     }
 
     // return true if the whole piece is marked downloaded

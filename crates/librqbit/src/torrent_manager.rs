@@ -256,6 +256,7 @@ impl TorrentManager {
         let chunk_tracker = ChunkTracker::new(
             initial_check_results.needed_pieces,
             initial_check_results.have_pieces,
+            initial_check_results.empty_pieces,
             lengths,
         );
 

@@ -518,6 +518,7 @@ impl TorrentState {
                     let tx = Arc::downgrade(tx);
                     futures.push(async move {
                         if let Some(tx) = tx.upgrade() {
+                            info!("Asked to transmitt to peer, complying");
                             if tx
                                 .send(WriterRequest::Message(Message::Have(index.get())))
                                 .is_err()
@@ -645,7 +646,7 @@ impl PeerConnectionHandler for PeerHandler {
 
     fn serialize_bitfield_message_to_buf(&self, buf: &mut Vec<u8>) -> Option<usize> {
         let g = self.state.locked.read();
-        let msg = Message::Bitfield(ByteBuf(g.chunks.get_have_pieces().as_raw_slice()));
+        let msg = Message::Bitfield(ByteBuf(g.chunks.get_empty_pieces().as_raw_slice()));
         let len = msg.serialize(buf, None).unwrap();
         debug!("sending to {}: {:?}, length={}", self.addr, &msg, len);
         Some(len)
@@ -718,7 +719,7 @@ impl PeerHandler {
         // Theoretically, this could be done in the sending code, so that it reads straight into
         // the send buffer.
         let request = WriterRequest::ReadChunkRequest(chunk_info);
-        debug!("sending to {}: {:?}", peer_handle, &request);
+        info!("sending to {}: {:?}", peer_handle, &request);
         Ok::<_, anyhow::Error>(tx.send(request)?)
     }
 
@@ -1068,7 +1069,7 @@ impl PeerHandler {
                             self.reopen_read_only()?;
                         }
 
-                        self.state.maybe_transmit_haves(chunk_info.piece_index);
+                        //only steal mode self.state.maybe_transmit_haves(chunk_info.piece_index);
                     }
                     false => {
                         warn!(
