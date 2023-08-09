@@ -21,6 +21,7 @@ use crate::type_aliases::{PeerHandle, BF};
 pub struct InitialCheckResults {
     pub needed_pieces: BF,
     pub have_pieces: BF,
+    pub empty_pieces: BF,
     pub have_bytes: u64,
     pub needed_bytes: u64,
 }
@@ -68,6 +69,7 @@ impl<'a, Sha1Impl: ISha1> FileOps<'a, Sha1Impl> {
         &self,
         only_files: Option<&[usize]>,
     ) -> anyhow::Result<InitialCheckResults> {
+        let empty_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
         let mut needed_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
         let mut have_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
 
@@ -208,6 +210,7 @@ impl<'a, Sha1Impl: ISha1> FileOps<'a, Sha1Impl> {
         Ok(InitialCheckResults {
             needed_pieces,
             have_pieces,
+            empty_pieces,
             have_bytes,
             needed_bytes,
         })
