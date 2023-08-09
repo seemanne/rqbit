@@ -518,7 +518,7 @@ impl TorrentState {
                     let tx = Arc::downgrade(tx);
                     futures.push(async move {
                         if let Some(tx) = tx.upgrade() {
-                            info!("Asked to transmitt to peer, complying");
+                            panic!("Asked to transmitt to peer, complying");
                             if tx
                                 .send(WriterRequest::Message(Message::Have(index.get())))
                                 .is_err()
@@ -720,6 +720,7 @@ impl PeerHandler {
         // the send buffer.
         let request = WriterRequest::ReadChunkRequest(chunk_info);
         info!("sending to {}: {:?}", peer_handle, &request);
+        panic!("Kill switch prevented download");
         Ok::<_, anyhow::Error>(tx.send(request)?)
     }
 
