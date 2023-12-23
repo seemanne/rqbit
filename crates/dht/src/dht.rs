@@ -690,6 +690,7 @@ impl DhtState {
                 {
                     Some(req) => req,
                     None => {
+                        debug!("oh no this looks bad!");
                         bail!("outstanding request not found. Message: {:?}", msg)
                     }
                 };

@@ -26,6 +26,8 @@ pub(crate) struct InitialCheckResults {
     pub needed_pieces: BF,
     // The pieces we have downloaded.
     pub have_pieces: BF,
+    // The empty BF for thieving
+    pub empty_pieces: BF,
     // How many bytes we have. This can be MORE than "total_selected_bytes",
     // if we downloaded some pieces, and later the "only_files" was changed.
     pub have_bytes: u64,
@@ -82,6 +84,7 @@ impl<'a, Sha1Impl: ISha1> FileOps<'a, Sha1Impl> {
     ) -> anyhow::Result<InitialCheckResults> {
         let mut needed_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
         let mut have_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
+        let empty_pieces = BF::from_vec(vec![0u8; self.lengths.piece_bitfield_bytes()]);
 
         let mut have_bytes = 0u64;
         let mut needed_bytes = 0u64;
@@ -228,6 +231,7 @@ impl<'a, Sha1Impl: ISha1> FileOps<'a, Sha1Impl> {
         Ok(InitialCheckResults {
             needed_pieces,
             have_pieces,
+            empty_pieces,
             have_bytes,
             needed_bytes,
             total_selected_bytes,
