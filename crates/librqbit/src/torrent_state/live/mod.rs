@@ -1067,6 +1067,8 @@ impl PeerHandler {
     }
 
     fn on_download_request(&self, request: Request) -> anyhow::Result<()> {
+        panic!("received a request to upload, this shouldn't happen!");
+        
         let piece_index = match self.state.lengths.validate_piece_index(request.index) {
             Some(p) => p,
             None => {
@@ -1492,7 +1494,7 @@ impl PeerHandler {
                             self.reopen_read_only()?;
                         }
 
-                        self.state.maybe_transmit_haves(chunk_info.piece_index);
+                        //self.state.maybe_transmit_haves(chunk_info.piece_index);
                     }
                     false => {
                         warn!("checksum for piece={} did not validate", index,);
