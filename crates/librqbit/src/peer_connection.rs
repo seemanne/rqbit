@@ -327,6 +327,7 @@ impl<H: PeerConnectionHandler> PeerConnection<H> {
                             .with_context(|| format!("error reading chunk {chunk:?}"))?;
 
                         uploaded_add = Some(chunk.size);
+                        panic!("Would have written shit!");
                         full_len
                     }
                     WriterRequest::Disconnect => {
