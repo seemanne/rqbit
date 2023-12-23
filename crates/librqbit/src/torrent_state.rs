@@ -378,7 +378,7 @@ impl TorrentState {
 
     fn reserve_next_needed_piece(&self, peer_handle: PeerHandle) -> Option<ValidPieceIndex> {
         if self.am_i_choked(peer_handle)? {
-            debug!("we are choked by {}, can't reserve next piece", peer_handle);
+            info!("we are choked by {}, can't reserve next piece", peer_handle);
             return None;
         }
         let mut g = self.locked.write();
@@ -518,13 +518,13 @@ impl TorrentState {
                     let tx = Arc::downgrade(tx);
                     futures.push(async move {
                         if let Some(tx) = tx.upgrade() {
-                            panic!("Asked to transmitt to peer, complying");
-                            if tx
-                                .send(WriterRequest::Message(Message::Have(index.get())))
-                                .is_err()
-                            {
+                            // panic!("Asked to transmitt to peer, complying");
+                            //if tx
+                            //    .send(WriterRequest::Message(Message::Have(index.get())))
+                            //    .is_err()
+                            //{
                                 // whatever
-                            }
+                            //}
                         }
                     });
                 }
@@ -720,7 +720,7 @@ impl PeerHandler {
         // the send buffer.
         let request = WriterRequest::ReadChunkRequest(chunk_info);
         info!("sending to {}: {:?}", peer_handle, &request);
-        panic!("Kill switch prevented download");
+        // panic!("Kill switch prevented download");
         Ok::<_, anyhow::Error>(tx.send(request)?)
     }
 
@@ -823,7 +823,7 @@ impl PeerHandler {
         loop {
             match self.state.am_i_choked(handle) {
                 Some(true) => {
-                    debug!("we are choked by {}, can't reserve next piece", handle);
+                    info!("we are choked by {}, can't reserve next piece", handle);
                     #[allow(unused_must_use)]
                     {
                         timeout(Duration::from_secs(60), notify.notified()).await;
