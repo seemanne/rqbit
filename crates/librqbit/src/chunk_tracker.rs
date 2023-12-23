@@ -20,6 +20,9 @@ pub struct ChunkTracker {
     // These are the pieces that we actually have, fully checked and downloaded.
     have: BF,
 
+    // An empty BF to allow us to pretend we have nothing
+    empty: BF,
+
     lengths: Lengths,
 
     // What pieces to download first.
@@ -63,6 +66,7 @@ impl ChunkTracker {
     pub fn new(
         needed_pieces: BF,
         have_pieces: BF,
+        empty_pieces: BF,
         lengths: Lengths,
         total_selected_bytes: u64,
     ) -> Self {
@@ -86,6 +90,7 @@ impl ChunkTracker {
             needed_pieces,
             lengths,
             have: have_pieces,
+            empty: empty_pieces,
             priority_piece_ids,
             total_selected_bytes,
         }
@@ -102,6 +107,11 @@ impl ChunkTracker {
     pub fn get_have_pieces(&self) -> &BF {
         &self.have
     }
+
+    pub fn get_empty_pieces(&self) -> &BF {
+        &self.empty
+    }
+    
     pub fn reserve_needed_piece(&mut self, index: ValidPieceIndex) {
         self.needed_pieces.set(index.get() as usize, false)
     }
